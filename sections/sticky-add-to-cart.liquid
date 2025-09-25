@@ -329,13 +329,26 @@
     function toggleStickyCart() {
       const mainButtonVisible = isElementInViewport(mainAddToCartButton);
       
+      console.log('Toggle sticky cart - main button visible:', mainButtonVisible);
+      
       if (mainButtonVisible) {
         stickyCart.classList.remove('show');
       } else {
         stickyCart.style.display = 'block';
-        setTimeout(() => stickyCart.classList.add('show'), 50);
+        setTimeout(() => {
+          stickyCart.classList.add('show');
+          console.log('Sticky cart should be visible now');
+        }, 50);
       }
     }
+    
+    // Show sticky cart immediately for testing
+    console.log('Sticky cart initialized, showing immediately for testing');
+    stickyCart.style.display = 'block';
+    setTimeout(() => {
+      stickyCart.classList.add('show');
+      console.log('Sticky cart force-shown for debugging');
+    }, 1000);
     
     // Listen for scroll events
     let ticking = false;

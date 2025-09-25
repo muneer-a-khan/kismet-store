@@ -1,0 +1,387 @@
+{%- comment -%}
+  Journal CTA Section
+  Dedicated section for larger, prominent journal and bundle CTAs
+{%- endcomment -%}
+
+<section id="journal-cta-{{ section.id }}" class="journal-cta-section">
+  <div class="page-width">
+    <div class="journal-cta-container">
+      {%- if section.settings.section_heading != blank -%}
+        <div class="journal-cta-header">
+          <h2 class="journal-cta-title">{{ section.settings.section_heading }}</h2>
+          {%- if section.settings.section_description != blank -%}
+            <p class="journal-cta-description">{{ section.settings.section_description }}</p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+      
+      <div class="journal-cta-buttons">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'journal_cta_button' -%}
+              <a 
+                href="{{ block.settings.button_link | default: '#' }}" 
+                class="journal-cta-button journal-cta-button--{{ block.settings.button_style }}"
+                {{ block.shopify_attributes }}
+              >
+                <div class="journal-cta-button-content">
+                  {%- if block.settings.button_icon != blank -%}
+                    <div class="journal-cta-icon">{{ block.settings.button_icon }}</div>
+                  {%- endif -%}
+                  
+                  <div class="journal-cta-text">
+                    <h3 class="journal-cta-button-title">{{ block.settings.button_title | default: 'Click Here' }}</h3>
+                    {%- if block.settings.button_subtitle != blank -%}
+                      <p class="journal-cta-button-subtitle">{{ block.settings.button_subtitle }}</p>
+                    {%- endif -%}
+                  </div>
+                  
+                  {%- if block.settings.show_arrow -%}
+                    <div class="journal-cta-arrow">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                  {%- endif -%}
+                </div>
+              </a>
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .journal-cta-section {
+    padding: {{ section.settings.padding_top | default: 60 }}px 0 {{ section.settings.padding_bottom | default: 60 }}px;
+    background: {{ section.settings.background_color | default: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' }};
+  }
+  
+  .journal-cta-container {
+    text-align: center;
+  }
+  
+  .journal-cta-header {
+    margin-bottom: 3rem;
+  }
+  
+  .journal-cta-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: #333;
+    line-height: 1.2;
+  }
+  
+  .journal-cta-description {
+    font-size: 1.1rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  
+  .journal-cta-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .journal-cta-button {
+    display: block;
+    padding: 2rem 1.5rem;
+    border-radius: 16px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .journal-cta-button--primary {
+    background: linear-gradient(135deg, #ff4081, #ff66c4);
+    color: white;
+  }
+  
+  .journal-cta-button--secondary {
+    background: linear-gradient(135deg, #ffffff, #f8f9fa);
+    color: #333;
+    border: 2px solid #ff4081;
+  }
+  
+  .journal-cta-button--accent {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+  }
+  
+  .journal-cta-button:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+  }
+  
+  .journal-cta-button--primary:hover {
+    color: white;
+  }
+  
+  .journal-cta-button--secondary:hover {
+    color: #333;
+    background: linear-gradient(135deg, #ffffff, #ffffff);
+  }
+  
+  .journal-cta-button--accent:hover {
+    color: white;
+  }
+  
+  .journal-cta-button-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .journal-cta-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+  }
+  
+  .journal-cta-button--secondary .journal-cta-icon {
+    background: rgba(255, 64, 129, 0.1);
+  }
+  
+  .journal-cta-text {
+    flex: 1;
+    text-align: left;
+  }
+  
+  .journal-cta-button-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.2;
+  }
+  
+  .journal-cta-button-subtitle {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.8;
+    line-height: 1.4;
+  }
+  
+  .journal-cta-arrow {
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+  }
+  
+  .journal-cta-button:hover .journal-cta-arrow {
+    transform: translate(4px, -4px);
+  }
+  
+  /* Decorative background elements */
+  .journal-cta-button::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+    z-index: 1;
+  }
+  
+  .journal-cta-button:hover::before {
+    transform: rotate(45deg) scale(1.2);
+  }
+  
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .journal-cta-section {
+      padding: {{ section.settings.padding_top | default: 60 | divided_by: 1.5 }}px 0 {{ section.settings.padding_bottom | default: 60 | divided_by: 1.5 }}px;
+    }
+    
+    .journal-cta-buttons {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    
+    .journal-cta-button {
+      padding: 1.5rem 1rem;
+    }
+    
+    .journal-cta-title {
+      font-size: 2rem;
+    }
+    
+    .journal-cta-button-content {
+      gap: 0.75rem;
+    }
+    
+    .journal-cta-icon {
+      width: 50px;
+      height: 50px;
+      font-size: 2rem;
+    }
+    
+    .journal-cta-button-title {
+      font-size: 1.1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .journal-cta-button-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 1rem;
+    }
+    
+    .journal-cta-text {
+      text-align: center;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Journal CTA Section",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_heading",
+      "label": "Section heading",
+      "default": "Transform Your Journey"
+    },
+    {
+      "type": "textarea",
+      "id": "section_description",
+      "label": "Section description",
+      "default": "Discover our exclusive digital wellness collection designed to help you glow up from the inside out."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "journal_cta_button",
+      "name": "Journal CTA Button",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_title",
+          "label": "Button title",
+          "default": "Shop Journals"
+        },
+        {
+          "type": "text",
+          "id": "button_subtitle",
+          "label": "Button subtitle",
+          "default": "Transform your mindset with our guided journals"
+        },
+        {
+          "type": "text",
+          "id": "button_icon",
+          "label": "Button icon (emoji or symbol)",
+          "default": "📖"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        },
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "Button style",
+          "options": [
+            {
+              "value": "primary",
+              "label": "Primary (Pink gradient)"
+            },
+            {
+              "value": "secondary",
+              "label": "Secondary (White with pink border)"
+            },
+            {
+              "value": "accent",
+              "label": "Accent (Purple gradient)"
+            }
+          ],
+          "default": "primary"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_arrow",
+          "label": "Show arrow",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Journal CTA Section",
+      "blocks": [
+        {
+          "type": "journal_cta_button",
+          "settings": {
+            "button_title": "Shop Journals & Books",
+            "button_subtitle": "Transform your mindset with our guided wellness journals",
+            "button_icon": "📖",
+            "button_link": "/collections/books-journals",
+            "button_style": "primary"
+          }
+        },
+        {
+          "type": "journal_cta_button",
+          "settings": {
+            "button_title": "Bundle & Save 20%",
+            "button_subtitle": "Get the complete collection at a special discount",
+            "button_icon": "💎",
+            "button_link": "/collections/all",
+            "button_style": "secondary"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

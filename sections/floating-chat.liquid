@@ -278,6 +278,17 @@
   
   // Auto-show panel on first visit if enabled
   document.addEventListener('DOMContentLoaded', function() {
+    console.log('Floating chat widget loaded');
+    const widgets = document.querySelectorAll('.floating-chat-widget');
+    console.log('Found floating chat widgets:', widgets.length);
+    
+    // Make widget visible regardless of settings for debugging
+    widgets.forEach(widget => {
+      widget.style.display = 'block';
+      widget.style.opacity = '1';
+      console.log('Made widget visible:', widget.id);
+    });
+    
     {% if section.settings.auto_open %}
       const hasSeenChat = localStorage.getItem('chat_widget_seen');
       if (!hasSeenChat) {
