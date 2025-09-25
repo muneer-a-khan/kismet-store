@@ -55,7 +55,7 @@
 <style>
   .journal-cta-section {
     padding: {{ section.settings.padding_top | default: 60 }}px 0 {{ section.settings.padding_bottom | default: 60 }}px;
-    background: {{ section.settings.background_color | default: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' }};
+    background: linear-gradient(135deg, {{ section.settings.background_color | default: '#f8f9fa' }}, {{ section.settings.background_color | default: '#f8f9fa' | color_lighten: 5 }});
   }
   
   .journal-cta-container {
@@ -275,7 +275,7 @@
       "type": "color",
       "id": "background_color",
       "label": "Background color",
-      "default": "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)"
+      "default": "#f8f9fa"
     },
     {
       "type": "range",

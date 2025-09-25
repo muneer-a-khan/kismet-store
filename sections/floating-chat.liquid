@@ -250,7 +250,7 @@
     } else {
       // If no panel, directly go to main contact action
       {% if section.settings.primary_action_link != blank %}
-        window.open('{{ section.settings.primary_action_link }}', '{{ section.settings.open_new_window ? "_blank" : "_self" }}');
+        window.open('{{ section.settings.primary_action_link }}', '{% if section.settings.open_new_window %}_blank{% else %}_self{% endif %}');
       {% endif %}
     }
   }
