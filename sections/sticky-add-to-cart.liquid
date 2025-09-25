@@ -5,6 +5,11 @@
 
 {%- if template.name == 'product' and section.settings.enable_sticky -%}
 <div id="sticky-cart-{{ section.id }}" class="sticky-add-to-cart" style="display: none;">
+  <button class="sticky-cart-close" onclick="closeStickyCart('{{ section.id }}')" aria-label="Close sticky cart">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
   <div class="sticky-cart-content">
     <div class="sticky-cart-product">
       {%- if product.featured_media -%}
@@ -101,55 +106,76 @@
 <style>
   .sticky-add-to-cart {
     position: fixed;
-    bottom: 20px;
-    left: 0;
-    right: 0;
+    top: 50%;
+    right: -350px;
+    transform: translateY(-50%);
+    width: 320px;
+    max-height: 90vh;
     background: {{ section.settings.background_color | default: '#ffffff' }};
-    border-top: 3px solid {{ section.settings.border_color | default: '#ff4081' }};
-    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15);
+    border: 2px solid {{ section.settings.border_color | default: '#ff4081' }};
+    border-right: none;
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
     z-index: 1000;
-    transform: translateY(100%);
-    transition: transform 0.3s ease;
-    padding: 1.5rem 0;
-    min-height: 80px;
-    border-radius: 12px 12px 0 0;
-    margin: 0 10px;
+    transition: all 0.3s ease;
+    padding: 2rem 1.5rem;
+    border-radius: 12px 0 0 12px;
+    overflow-y: auto;
   }
   
   .sticky-add-to-cart.show {
-    transform: translateY(0);
-    animation: slideUpBounce 0.4s ease-out;
+    right: 0;
+    transform: translateY(-50%);
+    animation: slideInRight 0.4s ease-out;
   }
   
-  @keyframes slideUpBounce {
+  @keyframes slideInRight {
     0% {
-      transform: translateY(100%);
-    }
-    70% {
-      transform: translateY(-5px);
+      right: -350px;
+      opacity: 0;
     }
     100% {
-      transform: translateY(0);
+      right: 0;
+      opacity: 1;
     }
+  }
+  
+  .sticky-cart-close {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.2s ease;
+    z-index: 10;
+  }
+  
+  .sticky-cart-close:hover {
+    background: rgba(0, 0, 0, 0.2);
+    color: #333;
+    transform: scale(1.1);
   }
   
   .sticky-cart-content {
-    max-width: var(--page-width);
-    margin: 0 auto;
-    padding: 0 1.5rem;
+    width: 100%;
+    padding: 0;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
     gap: 1.5rem;
-    min-height: 60px;
   }
   
   .sticky-cart-product {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    flex: 1;
-    min-width: 0;
+    width: 100%;
   }
   
   .sticky-cart-image {
@@ -191,8 +217,9 @@
   
   .sticky-cart-form {
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
   }
   
   .sticky-cart-variants {
@@ -222,13 +249,15 @@
   
   .sticky-cart-actions {
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
   }
   
   .sticky-quantity {
     display: flex;
     align-items: center;
+    justify-content: center;
   }
   
   .quantity-input {
@@ -278,7 +307,7 @@
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    min-width: 140px;
+    width: 100%;
     box-shadow: 0 4px 12px rgba(255, 64, 129, 0.3);
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -298,61 +327,48 @@
   /* Mobile responsive */
   @media (max-width: 768px) {
     .sticky-add-to-cart {
-      padding: 1.2rem 0;
-      min-height: 90px;
-      bottom: 10px;
-      margin: 0 5px;
+      width: 280px;
+      padding: 1.5rem 1rem;
+      right: -290px;
     }
     
-    .sticky-cart-content {
-      flex-direction: column;
-      gap: 1rem;
-      align-items: stretch;
+    .sticky-cart-image {
+      width: 50px;
+      height: 50px;
     }
     
-    .sticky-cart-product {
-      justify-content: center;
+    .sticky-cart-title {
+      font-size: 0.9rem;
     }
     
-    .sticky-cart-form {
-      justify-content: center;
-    }
-    
-    .sticky-cart-variants {
-      flex-wrap: wrap;
-    }
-    
-    .sticky-variant-option {
-      flex: 1;
-      min-width: 100px;
+    .sticky-cart-price {
+      font-size: 0.9rem;
     }
     
     .sticky-add-to-cart-button {
-      padding: 1rem 1.5rem;
-      font-size: 0.95rem;
-      min-width: 100%;
+      padding: 0.8rem 1.5rem;
+      font-size: 0.9rem;
     }
   }
   
   @media (max-width: 480px) {
     .sticky-add-to-cart {
-      min-height: 100px;
-      padding: 1.5rem 0;
+      width: 260px;
+      padding: 1.2rem 0.8rem;
+      right: -270px;
     }
     
     .sticky-cart-title {
-      font-size: 1rem;
+      font-size: 0.85rem;
     }
     
     .sticky-cart-price {
-      font-size: 1rem;
+      font-size: 0.85rem;
     }
     
     .sticky-add-to-cart-button {
-      padding: 1.2rem 1.5rem;
-      font-size: 1rem;
-      min-width: 100%;
-      font-weight: 700;
+      padding: 0.8rem 1rem;
+      font-size: 0.85rem;
     }
     
     .sticky-cart-variants {
@@ -360,8 +376,8 @@
     }
     
     .sticky-cart-image {
-      width: 60px;
-      height: 60px;
+      width: 45px;
+      height: 45px;
     }
   }
 </style>
@@ -476,6 +492,14 @@
       });
     }
   });
+  
+  // Function to close sticky cart
+  function closeStickyCart(sectionId) {
+    const stickyCart = document.getElementById('sticky-cart-' + sectionId);
+    if (stickyCart) {
+      stickyCart.classList.remove('show');
+    }
+  }
   
   // Quantity controls
   function changeQuantity(change, inputId) {
