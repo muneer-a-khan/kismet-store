@@ -1,0 +1,233 @@
+{%- comment -%}
+  Secondary CTA Bar
+  A horizontal bar with secondary action buttons
+{%- endcomment -%}
+
+<section id="secondary-cta-{{ section.id }}" class="secondary-cta-bar">
+  <div class="page-width">
+    <div class="secondary-cta-container">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'cta_button' -%}
+            <a 
+              href="{{ block.settings.button_link | default: '#' }}" 
+              class="secondary-cta-button"
+              {{ block.shopify_attributes }}
+            >
+              {%- if block.settings.button_icon != blank -%}
+                <span class="secondary-cta-icon">{{ block.settings.button_icon }}</span>
+              {%- endif -%}
+              <span class="secondary-cta-text">{{ block.settings.button_text | default: 'Click Here' }}</span>
+              {%- if block.settings.show_arrow -%}
+                <span class="secondary-cta-arrow">→</span>
+              {%- endif -%}
+            </a>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<style>
+  .secondary-cta-bar {
+    background: {{ section.settings.background_color | default: '#f8f9fa' }};
+    padding: {{ section.settings.padding_y | default: 20 }}px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  .secondary-cta-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .secondary-cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: {{ section.settings.button_background | default: 'rgba(255, 255, 255, 0.9)' }};
+    color: {{ section.settings.button_color | default: '#333' }};
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    border: 2px solid {{ section.settings.button_border | default: 'rgba(0, 0, 0, 0.1)' }};
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+  }
+  
+  .secondary-cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    background: {{ section.settings.button_hover_bg | default: '#ffffff' }};
+    color: {{ section.settings.button_hover_color | default: '#ff4081' }};
+    text-decoration: none;
+  }
+  
+  .secondary-cta-icon {
+    font-size: 1.1rem;
+  }
+  
+  .secondary-cta-arrow {
+    font-weight: bold;
+    transition: transform 0.3s ease;
+  }
+  
+  .secondary-cta-button:hover .secondary-cta-arrow {
+    transform: translateX(3px);
+  }
+  
+  @media (max-width: 600px) {
+    .secondary-cta-container {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .secondary-cta-button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  
+  {%- if section.settings.enable_sticky -%}
+  @media (min-width: 768px) {
+    .secondary-cta-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    }
+  }
+  {%- endif -%}
+</style>
+
+{% schema %}
+{
+  "name": "Secondary CTA Bar",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button background",
+      "default": "rgba(255, 255, 255, 0.9)"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button text color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "button_border",
+      "label": "Button border color",
+      "default": "rgba(0, 0, 0, 0.1)"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg",
+      "label": "Button hover background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button hover text color",
+      "default": "#ff4081"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Vertical padding",
+      "default": 20
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky",
+      "label": "Make sticky on desktop",
+      "default": false,
+      "info": "Bar will stick to top when scrolling"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "cta_button",
+      "name": "CTA Button",
+      "limit": 5,
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button text",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        },
+        {
+          "type": "text",
+          "id": "button_icon",
+          "label": "Button icon (emoji or symbol)",
+          "default": "🛍️"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_arrow",
+          "label": "Show arrow",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Secondary CTA Bar",
+      "blocks": [
+        {
+          "type": "cta_button",
+          "settings": {
+            "button_text": "Shop Journals",
+            "button_icon": "📖",
+            "button_link": "/collections/all"
+          }
+        },
+        {
+          "type": "cta_button",
+          "settings": {
+            "button_text": "Download Sample",
+            "button_icon": "📥",
+            "button_link": "#"
+          }
+        },
+        {
+          "type": "cta_button",
+          "settings": {
+            "button_text": "Bundle & Save 20%",
+            "button_icon": "💎",
+            "button_link": "/collections/all"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

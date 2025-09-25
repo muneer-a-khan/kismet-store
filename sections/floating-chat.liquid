@@ -1,0 +1,556 @@
+{%- comment -%}
+  Floating Chat Widget
+  A persistent floating button for customer support/messaging
+{%- endcomment -%}
+
+{%- if section.settings.enable_chat -%}
+<div id="floating-chat-{{ section.id }}" class="floating-chat-widget">
+  <button class="floating-chat-button" onclick="toggleChat('{{ section.id }}')" aria-label="{{ section.settings.button_label | default: 'Chat with us' }}">
+    <span class="chat-icon" id="chat-icon-{{ section.id }}">
+      {%- if section.settings.chat_icon == 'message' -%}
+        💬
+      {%- elsif section.settings.chat_icon == 'support' -%}
+        🎧
+      {%- elsif section.settings.chat_icon == 'help' -%}
+        ❓
+      {%- else -%}
+        💬
+      {%- endif -%}
+    </span>
+    <span class="chat-text">{{ section.settings.button_text | default: 'Chat' }}</span>
+  </button>
+  
+  {%- if section.settings.show_chat_panel -%}
+    <div class="chat-panel" id="chat-panel-{{ section.id }}" style="display: none;">
+      <div class="chat-header">
+        <h4>{{ section.settings.panel_title | default: 'How can we help?' }}</h4>
+        <button class="chat-close" onclick="closeChat('{{ section.id }}')" aria-label="Close chat">×</button>
+      </div>
+      
+      <div class="chat-content">
+        {%- if section.settings.panel_message != blank -%}
+          <div class="chat-message">
+            {{ section.settings.panel_message }}
+          </div>
+        {%- endif -%}
+        
+        <div class="chat-options">
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when 'chat_option' -%}
+                <a 
+                  href="{{ block.settings.option_link | default: '#' }}" 
+                  class="chat-option"
+                  {{ block.shopify_attributes }}
+                  {% if block.settings.open_new_window %}target="_blank"{% endif %}
+                >
+                  <span class="option-icon">{{ block.settings.option_icon | default: '📞' }}</span>
+                  <span class="option-text">{{ block.settings.option_text | default: 'Contact Us' }}</span>
+                </a>
+            {%- endcase -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+<style>
+  .floating-chat-widget {
+    position: fixed;
+    bottom: {{ section.settings.bottom_position | default: 20 }}px;
+    {{ section.settings.horizontal_position | default: 'right' }}: {{ section.settings.side_position | default: 20 }}px;
+    z-index: 1000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  
+  .floating-chat-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: {{ section.settings.button_color | default: '#ff4081' }};
+    color: {{ section.settings.button_text_color | default: 'white' }};
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    font-weight: 600;
+    min-width: 60px;
+    justify-content: center;
+  }
+  
+  .floating-chat-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+    background: {{ section.settings.button_hover_color | default: '#ff66c4' }};
+  }
+  
+  .chat-icon {
+    font-size: 1.2rem;
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  
+  .chat-text {
+    white-space: nowrap;
+  }
+  
+  .chat-panel {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 300px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+    transition: all 0.3s ease;
+  }
+  
+  .chat-panel.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  
+  .chat-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    padding: 1rem;
+    background: {{ section.settings.panel_header_color | default: '#f8f9fa' }};
+    border-bottom: 1px solid #eee;
+  }
+  
+  .chat-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .chat-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    margin-left: auto;
+  }
+  
+  .chat-close:hover {
+    color: #333;
+  }
+  
+  .chat-content {
+    padding: 1rem;
+  }
+  
+  .chat-message {
+    margin-bottom: 1rem;
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  
+  .chat-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .chat-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s ease;
+  }
+  
+  .chat-option:hover {
+    background: #e9ecef;
+    text-decoration: none;
+    color: #333;
+  }
+  
+  .option-icon {
+    font-size: 1.1rem;
+  }
+  
+  .option-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  
+  /* Mobile responsive */
+  @media (max-width: 600px) {
+    .floating-chat-widget {
+      bottom: {{ section.settings.mobile_bottom | default: 15 }}px;
+      {{ section.settings.horizontal_position | default: 'right' }}: {{ section.settings.mobile_side | default: 15 }}px;
+    }
+    
+    .chat-panel {
+      width: 280px;
+      right: -10px;
+    }
+    
+    .chat-text {
+      display: none;
+    }
+    
+    .floating-chat-button {
+      padding: 0.75rem;
+      min-width: 50px;
+    }
+  }
+  
+  /* Hide on very small screens if setting enabled */
+  {%- if section.settings.hide_on_mobile -%}
+    @media (max-width: 480px) {
+      .floating-chat-widget {
+        display: none;
+      }
+    }
+  {%- endif -%}
+</style>
+
+<script>
+  function toggleChat(sectionId) {
+    const panel = document.getElementById('chat-panel-' + sectionId);
+    const button = document.querySelector('#floating-chat-' + sectionId + ' .floating-chat-button');
+    
+    if (panel) {
+      const isVisible = panel.style.display === 'block';
+      
+      if (isVisible) {
+        panel.classList.remove('show');
+        setTimeout(() => {
+          panel.style.display = 'none';
+        }, 300);
+      } else {
+        panel.style.display = 'block';
+        setTimeout(() => {
+          panel.classList.add('show');
+        }, 10);
+      }
+    } else {
+      // If no panel, directly go to main contact action
+      {% if section.settings.primary_action_link != blank %}
+        window.open('{{ section.settings.primary_action_link }}', '{{ section.settings.open_new_window ? "_blank" : "_self" }}');
+      {% endif %}
+    }
+  }
+  
+  function closeChat(sectionId) {
+    const panel = document.getElementById('chat-panel-' + sectionId);
+    if (panel) {
+      panel.classList.remove('show');
+      setTimeout(() => {
+        panel.style.display = 'none';
+      }, 300);
+    }
+  }
+  
+  // Close chat when clicking outside
+  document.addEventListener('click', function(event) {
+    const widgets = document.querySelectorAll('.floating-chat-widget');
+    widgets.forEach(widget => {
+      if (!widget.contains(event.target)) {
+        const sectionId = widget.id.replace('floating-chat-', '');
+        closeChat(sectionId);
+      }
+    });
+  });
+  
+  // Auto-show panel on first visit if enabled
+  document.addEventListener('DOMContentLoaded', function() {
+    {% if section.settings.auto_open %}
+      const hasSeenChat = localStorage.getItem('chat_widget_seen');
+      if (!hasSeenChat) {
+        setTimeout(() => {
+          const firstWidget = document.querySelector('.floating-chat-widget');
+          if (firstWidget) {
+            const sectionId = firstWidget.id.replace('floating-chat-', '');
+            toggleChat(sectionId);
+            localStorage.setItem('chat_widget_seen', 'true');
+          }
+        }, {{ section.settings.auto_open_delay | default: 3 }} * 1000);
+      }
+    {% endif %}
+  });
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Floating Chat Widget",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_chat",
+      "label": "Enable floating chat widget",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Message Us"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button aria-label (accessibility)",
+      "default": "Chat with us"
+    },
+    {
+      "type": "select",
+      "id": "chat_icon",
+      "label": "Chat icon",
+      "options": [
+        {
+          "value": "message",
+          "label": "💬 Message"
+        },
+        {
+          "value": "support",
+          "label": "🎧 Support"
+        },
+        {
+          "value": "help",
+          "label": "❓ Help"
+        }
+      ],
+      "default": "message"
+    },
+    {
+      "type": "header",
+      "content": "Button Styling"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button color",
+      "default": "#ff4081"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button hover color",
+      "default": "#ff66c4"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Position Settings"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_position",
+      "label": "Horizontal position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "range",
+      "id": "side_position",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Distance from side",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "bottom_position",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Distance from bottom",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_side",
+      "min": 10,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile distance from side",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "mobile_bottom",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile distance from bottom",
+      "default": 15
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_on_mobile",
+      "label": "Hide on very small screens",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Chat Panel Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_chat_panel",
+      "label": "Show expandable chat panel",
+      "default": true,
+      "info": "If disabled, button will directly open the primary action link"
+    },
+    {
+      "type": "text",
+      "id": "panel_title",
+      "label": "Panel title",
+      "default": "How can we help?"
+    },
+    {
+      "type": "richtext",
+      "id": "panel_message",
+      "label": "Panel message",
+      "default": "<p>Choose how you'd like to get in touch with our team!</p>"
+    },
+    {
+      "type": "color",
+      "id": "panel_header_color",
+      "label": "Panel header color",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "url",
+      "id": "primary_action_link",
+      "label": "Primary action link",
+      "info": "Used when panel is disabled or as fallback"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_new_window",
+      "label": "Open primary action in new window",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Auto-Open Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_open",
+      "label": "Auto-open panel for first-time visitors",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "auto_open_delay",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "label": "Auto-open delay",
+      "default": 3
+    }
+  ],
+  "blocks": [
+    {
+      "type": "chat_option",
+      "name": "Chat Option",
+      "limit": 5,
+      "settings": [
+        {
+          "type": "text",
+          "id": "option_text",
+          "label": "Option text",
+          "default": "Contact Us"
+        },
+        {
+          "type": "text",
+          "id": "option_icon",
+          "label": "Option icon (emoji)",
+          "default": "📞"
+        },
+        {
+          "type": "url",
+          "id": "option_link",
+          "label": "Option link"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_new_window",
+          "label": "Open in new window",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Floating Chat Widget",
+      "blocks": [
+        {
+          "type": "chat_option",
+          "settings": {
+            "option_text": "WhatsApp Chat",
+            "option_icon": "💬",
+            "option_link": "https://wa.me/1234567890"
+          }
+        },
+        {
+          "type": "chat_option",
+          "settings": {
+            "option_text": "Send Email",
+            "option_icon": "✉️",
+            "option_link": "mailto:hello@kismetwonders.com"
+          }
+        },
+        {
+          "type": "chat_option",
+          "settings": {
+            "option_text": "FAQ / Help",
+            "option_icon": "❓",
+            "option_link": "/pages/faq"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
