@@ -1,0 +1,400 @@
+{%- comment -%}
+  Bonus Bundle Popup
+  A modal popup that appears to promote the free 9-page bonus bundle
+{%- endcomment -%}
+
+{%- if section.settings.enable_popup -%}
+<div id="bonus-popup-{{ section.id }}" class="bonus-popup-overlay" style="display: none;">
+  <div class="bonus-popup-modal">
+    <button class="bonus-popup-close" onclick="closeBonusPopup('{{ section.id }}')" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M13.5 4.5L4.5 13.5M4.5 4.5L13.5 13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    
+    <div class="bonus-popup-content">
+      {%- if section.settings.popup_heading != blank -%}
+        <h2 class="bonus-popup-heading">{{ section.settings.popup_heading }}</h2>
+      {%- endif -%}
+      
+      {%- if section.settings.popup_text != blank -%}
+        <div class="bonus-popup-text">
+          {{ section.settings.popup_text }}
+        </div>
+      {%- endif -%}
+      
+      {%- if section.settings.show_email_form -%}
+        {%- form 'customer', class: 'bonus-popup-form', id: 'bonus-popup-form-' | append: section.id -%}
+          <input type="hidden" name="contact[tags]" value="newsletter,bonus-bundle">
+          
+          <div class="bonus-popup-form-field">
+            <input
+              id="bonus-popup-email-{{ section.id }}"
+              type="email"
+              name="contact[email]"
+              class="bonus-popup-input"
+              placeholder="{{ section.settings.email_placeholder | default: 'Enter your email address' }}"
+              required
+            >
+          </div>
+          
+          <button type="submit" class="bonus-popup-button">
+            {{ section.settings.popup_button_text | default: 'Yes! Send Me My Free Bonus Bundle' }}
+          </button>
+          
+          {%- if form.errors -%}
+            <div class="bonus-popup-error" role="alert">{{ form.errors | default_errors }}</div>
+          {%- elsif form.posted_successfully? -%}
+            <div class="bonus-popup-success" role="status">{{ section.settings.success_message | default: 'Thank you! Your bonus bundle is on its way!' }}</div>
+          {%- endif -%}
+        {%- endform -%}
+      {%- else -%}
+        <a href="{{ section.settings.popup_button_link | default: '/collections/all' }}" class="bonus-popup-button">
+          {{ section.settings.popup_button_text | default: 'Yes! Send Me My Free Bonus Bundle' }}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<style>
+  .bonus-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 10000;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  
+  .bonus-popup-overlay.show {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .bonus-popup-modal {
+    background: #ffffff;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    border-radius: 12px;
+    position: relative;
+    padding: 2rem;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+  
+  .bonus-popup-overlay.show .bonus-popup-modal {
+    transform: scale(1);
+  }
+  
+  .bonus-popup-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+  }
+  
+  .bonus-popup-close:hover {
+    background-color: #f5f5f5;
+    color: #333;
+  }
+  
+  .bonus-popup-heading {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: #333;
+    line-height: 1.2;
+  }
+  
+  .bonus-popup-text {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #666;
+    line-height: 1.5;
+  }
+  
+  .bonus-popup-text p {
+    margin: 0 0 1rem 0;
+  }
+  
+  .bonus-popup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .bonus-popup-form-field {
+    position: relative;
+  }
+  
+  .bonus-popup-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+  }
+  
+  .bonus-popup-input:focus {
+    outline: none;
+    border-color: #ff66c4;
+  }
+  
+  .bonus-popup-button {
+    background: linear-gradient(135deg, #ff66c4, #ff4081);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+  }
+  
+  .bonus-popup-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 102, 196, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+  
+  .bonus-popup-error {
+    color: #e74c3c;
+    text-align: center;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .bonus-popup-success {
+    color: #27ae60;
+    text-align: center;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  
+  @media (max-width: 600px) {
+    .bonus-popup-modal {
+      margin: 1rem;
+      padding: 1.5rem;
+    }
+    
+    .bonus-popup-heading {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+
+<script>
+  function showBonusPopup(sectionId) {
+    const popup = document.getElementById('bonus-popup-' + sectionId);
+    if (popup) {
+      popup.style.display = 'flex';
+      setTimeout(() => {
+        popup.classList.add('show');
+      }, 10);
+      document.body.style.overflow = 'hidden';
+    }
+  }
+  
+  function closeBonusPopup(sectionId) {
+    const popup = document.getElementById('bonus-popup-' + sectionId);
+    if (popup) {
+      popup.classList.remove('show');
+      setTimeout(() => {
+        popup.style.display = 'none';
+        document.body.style.overflow = '';
+      }, 300);
+      
+      // Set cookie to remember user closed popup
+      document.cookie = 'bonus_popup_closed=true; max-age=' + ({{ section.settings.popup_delay_days | default: 7 }} * 24 * 60 * 60) + '; path=/';
+    }
+  }
+  
+  // Auto-show popup based on settings
+  document.addEventListener('DOMContentLoaded', function() {
+    const sectionId = '{{ section.id }}';
+    
+    // Check if popup was already closed
+    const popupClosed = document.cookie.split(';').some((item) => item.trim().startsWith('bonus_popup_closed='));
+    
+    if (!popupClosed) {
+      {%- if section.settings.popup_trigger == 'page_load' -%}
+        setTimeout(() => {
+          showBonusPopup(sectionId);
+        }, {{ section.settings.popup_delay | default: 3 }} * 1000);
+      {%- elsif section.settings.popup_trigger == 'exit_intent' -%}
+        // Simple exit intent detection
+        let exitIntentTriggered = false;
+        document.addEventListener('mouseleave', (e) => {
+          if (!exitIntentTriggered && e.clientY <= 0) {
+            exitIntentTriggered = true;
+            showBonusPopup(sectionId);
+          }
+        });
+      {%- elsif section.settings.popup_trigger == 'scroll' -%}
+        let scrollTriggered = false;
+        window.addEventListener('scroll', () => {
+          if (!scrollTriggered && (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) > {{ section.settings.scroll_percentage | default: 50 }} / 100) {
+            scrollTriggered = true;
+            showBonusPopup(sectionId);
+          }
+        });
+      {%- endif -%}
+    }
+    
+    // Close popup when clicking outside
+    document.getElementById('bonus-popup-' + sectionId).addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeBonusPopup(sectionId);
+      }
+    });
+  });
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Bonus Bundle Popup",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_popup",
+      "label": "Enable popup",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "popup_heading",
+      "label": "Popup heading",
+      "default": "🎁 Special Bonus for You!"
+    },
+    {
+      "type": "richtext",
+      "id": "popup_text",
+      "label": "Popup text",
+      "default": "<p>Get your free 9-page <strong>\"Becoming Me. Again\"</strong> bonus bundle when you join our community today!</p><p>This exclusive digital wellness guide will help you transform your journey to self-discovery.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_email_form",
+      "label": "Show email capture form",
+      "default": true,
+      "info": "If disabled, the button will link to a URL instead"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "Email input placeholder",
+      "default": "Enter your email address"
+    },
+    {
+      "type": "text",
+      "id": "popup_button_text",
+      "label": "Button text",
+      "default": "Yes! Send Me My Free Bonus Bundle"
+    },
+    {
+      "type": "url",
+      "id": "popup_button_link",
+      "label": "Button link (if email form is disabled)",
+      "default": "/collections/all"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "Thank you! Your bonus bundle is on its way!"
+    },
+    {
+      "type": "header",
+      "content": "Popup Trigger Settings"
+    },
+    {
+      "type": "select",
+      "id": "popup_trigger",
+      "label": "When to show popup",
+      "options": [
+        {
+          "value": "page_load",
+          "label": "After page loads"
+        },
+        {
+          "value": "exit_intent",
+          "label": "On exit intent"
+        },
+        {
+          "value": "scroll",
+          "label": "When scrolling"
+        }
+      ],
+      "default": "page_load"
+    },
+    {
+      "type": "range",
+      "id": "popup_delay",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "unit": "s",
+      "label": "Delay before showing popup (page load only)",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "scroll_percentage",
+      "min": 10,
+      "max": 90,
+      "step": 10,
+      "unit": "%",
+      "label": "Show popup after scrolling (scroll trigger only)",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "popup_delay_days",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "unit": "days",
+      "label": "Don't show popup again for",
+      "default": 7,
+      "info": "After a user closes the popup, don't show it again for this many days"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bonus Bundle Popup"
+    }
+  ]
+}
+{% endschema %}
