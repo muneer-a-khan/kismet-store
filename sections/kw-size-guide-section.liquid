@@ -1,0 +1,29 @@
+{% comment %}
+Kismet Wonders – Size Guide Section (mobile-forced visible)
+If a parent container is hidden on mobile, move this section higher in the layout via Customize.
+{% endcomment %}
+
+<section id="kw-sg-{{ section.id }}" class="page-width kw-size-guide-section" aria-label="Kismet Wonders Size Guide Section" style="display:block !important; visibility:visible !important; opacity:1 !important;">
+  <style>
+    /* Ensure this specific section is visible on mobile, even if theme uses utility hide classes */
+    @media (max-width: 749px) {
+      #shopify-section-{{ section.id }},
+      #kw-sg-{{ section.id }} {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        height: auto !important;
+      }
+    }
+  </style>
+
+  {% render 'kw-size-guide' %}
+</section>
+
+{% schema %}
+{
+  "name": "Kismet Size Guide",
+  "settings": [],
+  "presets": [{ "name": "Kismet Size Guide" }]
+}
+{% endschema %}

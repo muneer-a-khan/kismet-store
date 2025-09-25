@@ -1,0 +1,21 @@
+{% comment %}
+  Custom robots.txt for Kismet Wonders — allows Google to crawl product, collection, and blog pages,
+  while blocking duplicate/irrelevant URLs (cart, checkout, search, account).
+{% endcomment %}
+
+User-agent: *
+Allow: /$
+Allow: /products
+Allow: /collections
+Allow: /blogs
+Disallow: /cart
+Disallow: /checkout
+Disallow: /orders
+Disallow: /account
+Disallow: /admin
+Disallow: /search
+Disallow: /*?*          # block duplicate querystring URLs (sorting, filters, etc.)
+Disallow: /*tag=*       # block collection tag duplicates if needed
+Disallow: /*page=*      # block pagination duplicates (canonical handles them)
+
+Sitemap: {{ shop.url }}/sitemap.xml

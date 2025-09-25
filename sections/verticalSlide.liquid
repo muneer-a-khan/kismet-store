@@ -1,0 +1,215 @@
+{% style %}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+  
+:root {
+    --card-height: 40vw;
+    --card-margin: 4vw;
+    --card-top-offset: 1em;
+    --numcards: {{ section.blocks.size }};
+    --outline-width: 0px;
+}
+
+#cards {
+    padding-bottom: calc(var(--numcards) * var(--card-top-offset));
+    margin-bottom: var(--card-margin);
+    position: relative; /* Ensure relative positioning for absolute positioning of cards */
+
+
+}
+
+.image-card {
+    position: sticky;
+    top: 0;
+    padding-top: calc(var(--index) * var(--card-top-offset));
+    /* animation: scale 0.5s forwards; */
+  animation: linear scale forwards;
+	animation-timeline: --cards-element-scrolls-in-body;
+	animation-range: exit-crossing var(--start-range) exit-crossing var(--end-range);
+  	--start-range: calc(var(--index0) / var(--numcards) * 100%);
+	--end-range: calc((var(--index)) / var(--numcards) * 100%);
+
+}
+
+.card__content3 {
+    transform-origin: 50% 0%;
+    will-change: transform;
+    /* box-shadow: 0 0.2em 1em rgba(0, 0, 0, 0.1), 0 1em 2em rgba(0, 0, 0, 0.1); */
+	/* background: rgb(255, 255, 255); */
+}
+
+  figure{
+    overflow-x:hidden;
+    margin: 0;
+  }
+
+
+.card__content3 > div {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff; /* Text color */
+}
+
+{% for block in section.blocks %}
+#card_{{ forloop.index }} .card__content3> div {
+    {% case block.settings.content_position %}
+        {% when 'left' %}
+            left: 20px; /* Adjust left position as needed */
+            text-align: left;
+        {% when 'right' %}
+            right: 20px; /* Adjust right position as needed */
+            text-align: right;
+        {% else %}
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+    {% endcase %}
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff; /* Text color */
+}
+{% endfor %}
+
+   
+.card__content3 > div h2 {
+    font-size: 24px; /* Adjust font size as needed */
+    margin-bottom: 10px; /* Adjust margin as needed */
+}
+
+.card__content3 > div p {
+    font-size: 16px; /* Adjust font size as needed */
+}
+
+ .card__content3 img {
+    border-radius: 30px;
+   width: 100%;
+} 
+
+  
+
+/* @keyframes scale {
+    to {
+        transform: scale(1);
+    }
+} */
+@keyframes scale {
+	to {
+		transform:
+			scale(calc(1.1 - calc(0.1 * var(--reverse-index))));
+	}
+}
+  
+
+{% for block in section.blocks %}
+#card_{{ forloop.index }} {
+    --index: {{ forloop.index }};
+    animation-delay: calc((var(--numcards) - var(--index)) * 0.1s); /* Delay animation based on card position */
+}
+{% endfor %}
+
+{% endstyle %}
+
+<div class="page-width gradient color-{{ section.settings.color_scheme }} {{ section.settings.class }} section-{{ section.id }}-padding">
+{%- liquid  assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840' %}
+
+  
+    <ul id="cards" >
+        {% for block in section.blocks %}
+        <li class="card image-card block{{ block.id }}" id="card_{{ forloop.index }}">
+            <div class="card__content3">
+                <div class="scrollBanner_content">
+                    <h2>{{ block.settings.heading }}</h2>
+                    <p>{{ block.settings.content }}</p>
+                    <a href="{{ block.settings.link }}" class="button_slide button">
+      
+                      
+                      {{ block.settings.label }}
+                    </a>
+                </div>
+                <figure>
+                    {{ block.settings.image | image_url: width: 3840 | image_tag: width: section.settings.image.width }}
+                </figure>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+
+{% schema %}
+{
+     "name": "slider vertical scroll",
+     "settings": [],
+     "blocks":[
+       
+       {
+         "type": "column",
+         "name":"slider image",
+         "limit":30,
+         "settings": [
+               {
+                 "type": "richtext",
+                 "id": "heading",
+                 "label": "heading"
+               },
+           {
+                 "type": "text",
+                 "id": "content",
+                 "label": "content"
+               },
+           {
+             "type": "text",
+             "id": "label",
+             "label": "button text"
+           },
+              {
+                 "type": "url",
+                 "id": "link",
+                 "label": "link"
+               },
+             {
+                 "type": "image_picker",
+                 "id": "image",
+                 "label": "image"
+               },
+           {
+          "type": "select",
+          "label": "Content Position",
+          "id": "content_position",
+          "default": "center",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            }
+          ]
+        }
+           
+         ]
+       }
+     ],
+     "presets": [
+     {
+       "name": "slider vertical scroll",
+       "blocks": [
+         {
+           "type": "column"
+         }
+       ]
+     }
+   ]
+   }
+
+{% endschema %}

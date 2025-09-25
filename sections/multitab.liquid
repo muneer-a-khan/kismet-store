@@ -1,0 +1,148 @@
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+<link rel="stylesheet" href="{{ 'component-slider.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'template-collection.css' | asset_url }}" media="print" onload="this.media='all'">
+{%- if section.settings.enable_quick_add -%}
+  <link rel="stylesheet" href="{{ 'quick-add.css' | asset_url }}" media="print" onload="this.media='all'">
+  <script src="{{ 'quick-add.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+<noscript>{{ 'component-slider.css' | asset_url | stylesheet_tag }}</noscript>
+<noscript>{{ 'template-collection.css' | asset_url | stylesheet_tag }}</noscript>
+
+
+<div class="tab page-width">
+  {% for block in section.blocks %}
+    <button class="tablinks {% if forloop.index == 1 %}active{% endif %}" onclick="openBlocks(event, 'block-{{ forloop.index }}')">{{ block.settings.collection.title }}</button>
+  {% endfor %}
+</div>
+
+{% for block in section.blocks %}
+<div id="block-{{ forloop.index }}" class="tabcontent page-width"" {% if forloop.index == 1 %} style="display:block" {% endif %}>
+  <div class="section-three-product-grid">
+    {%- for product in block.settings.collection.products limit: block.settings.products_to_show -%}
+      <div class="section-three-product-grid-product">
+        {% render 'card-product',
+          card_product: product,
+          media_aspect_ratio: block.settings.image_ratio,
+          show_secondary_image: block.settings.show_secondary_image,
+          show_vendor: block.settings.show_vendor,
+          show_rating: block.settings.show_rating,
+          show_quick_add: section.settings.enable_quick_add,
+          section_id: block.id
+        %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endfor %}
+
+{% schema %}
+{
+  "name": "section-tab",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_quick_add",
+      "default": false,
+      "label": "Quick Add to Cart"
+    }
+  ],
+  "blocks":[
+    {
+      "type": "column",
+      "name":"column images text",
+      "limit":3,
+      "settings": [
+        {
+            "type": "collection",
+            "id": "collection",
+            "label": "Tab Category"
+        },
+        {
+            "type": "range",
+            "id": "products_to_show",
+            "min": 2,
+            "max": 12,
+            "step": 1,
+            "default": 4,
+            "label": "Product limit"
+        },
+        {
+          "type": "select",
+          "id": "image_ratio",
+          "options": [
+            {
+              "value": "adapt",
+              "label": "t:sections.featured-collection.settings.image_ratio.options__1.label"
+            },
+            {
+              "value": "portrait",
+              "label": "t:sections.featured-collection.settings.image_ratio.options__2.label"
+            },
+            {
+              "value": "square",
+              "label": "t:sections.featured-collection.settings.image_ratio.options__3.label"
+            }
+          ],
+          "default": "adapt",
+          "label": "t:sections.featured-collection.settings.image_ratio.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_secondary_image",
+          "default": false,
+          "label": "t:sections.featured-collection.settings.show_secondary_image.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_vendor",
+          "default": false,
+          "label": "t:sections.featured-collection.settings.show_vendor.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_rating",
+          "default": false,
+          "label": "t:sections.featured-collection.settings.show_rating.label",
+          "info": "t:sections.featured-collection.settings.show_rating.info"
+        }
+      ]
+    }
+  ],
+  "presets": [
+  {
+    "name": "section-tab",
+    "blocks": [
+      {
+        "type": "column"
+      }
+    ]
+  }
+]
+}
+{% endschema %}
+
+<script>
+function openBlocks(evt, block_id) {
+  var i, tabcontent, tablinks;
+  {% comment %} display none all tab content {% endcomment %}
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  {% comment %} remove active class all tab {% endcomment %}
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  {% comment %} selected id display block of tab content {% endcomment %}
+  document.getElementById(block_id).style.display = "block";
+
+  {% comment %} selected tab add active class {% endcomment %}
+  evt.currentTarget.className += " active";
+}
+</script>
+

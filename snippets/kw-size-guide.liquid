@@ -1,0 +1,196 @@
+{%- comment -%}
+Kismet Wonders – Size Guide (Dawn 15.4 mobile-safe, collapsible, conditional)
+Shows when:
+ • Product TAG contains "show-size-chart"  OR
+ • TYPE/TITLE/COLLECTION indicates tee/t-shirt/shirt/sweatshirt/hoodie/jacket (incl. bomber/puffer/windbreaker)
+Excludes:
+ • Vendor contains "trendsi" OR any tag contains "trendsi"
+{%- endcomment -%}
+
+{%- if product -%}
+  {%- assign tag_string = product.tags | join: ',' | downcase -%}
+
+  {%- assign has_explicit_show = false -%}
+  {%- if tag_string contains 'show-size-chart' -%}{%- assign has_explicit_show = true -%}{%- endif -%}
+
+  {%- assign allowed_types = "t-shirt,tee,t shirts,tshirts,tshirt,t shirt,shirt,shirts,sweatshirt,sweatshirts,hoodie,hoodies,hooded sweatshirt,crewneck,crewnecks,jacket,jackets,denim jacket,denim jackets,bomber,puffer,windbreaker" | split: "," -%}
+  {%- assign p_type = product.type | downcase -%}
+  {%- assign p_type_legacy = product.product_type | downcase -%}
+  {%- assign is_type_allowed = false -%}
+  {%- for t in allowed_types -%}
+    {%- assign t_down = t | downcase -%}
+    {%- if p_type contains t_down or p_type_legacy contains t_down -%}{%- assign is_type_allowed = true -%}{%- endif -%}
+  {%- endfor -%}
+
+  {%- assign p_title = product.title | downcase -%}
+  {%- assign is_title_allowed = false -%}
+  {%- if p_title contains 'tee' or p_title contains 't-shirt' or p_title contains 'shirt' or p_title contains 'sweatshirt' or p_title contains 'hoodie' or p_title contains 'jacket' or p_title contains 'bomber' or p_title contains 'puffer' or p_title contains 'windbreaker' -%}
+    {%- assign is_title_allowed = true -%}
+  {%- endif -%}
+
+  {%- assign col_text = '' -%}
+  {%- for c in product.collections -%}
+    {%- assign col_text = col_text | append: ',' | append: c.handle | append: ',' | append: c.title | downcase -%}
+  {%- endfor -%}
+  {%- assign is_collection_allowed = false -%}
+  {%- if col_text contains 'tee' or col_text contains 't-shirt' or col_text contains 'shirt' or col_text contains 'sweatshirt' or col_text contains 'hoodie' or col_text contains 'jacket' or col_text contains 'bomber' or col_text contains 'puffer' or col_text contains 'windbreaker' -%}
+    {%- assign is_collection_allowed = true -%}
+  {%- endif -%}
+
+  {%- assign is_trendsi = false -%}
+  {%- if product.vendor and product.vendor != blank -%}
+    {%- assign lower_vendor = product.vendor | downcase -%}
+    {%- if lower_vendor contains 'trendsi' -%}{%- assign is_trendsi = true -%}{%- endif -%}
+  {%- endif -%}
+  {%- if is_trendsi == false and tag_string contains 'trendsi' -%}{%- assign is_trendsi = true -%}{%- endif -%}
+
+  {%- assign should_show = false -%}
+  {%- if has_explicit_show -%}
+    {%- assign should_show = true -%}
+  {%- else -%}
+    {%- if is_type_allowed or is_title_allowed or is_collection_allowed -%}{%- assign should_show = true -%}{%- endif -%}
+  {%- endif -%}
+  {%- if is_trendsi -%}{%- assign should_show = false -%}{%- endif -%}
+{%- endif -%}
+
+{%- if should_show -%}
+  <style>
+    .kw-size-guide {
+      --kw-bg:#fff; --kw-fg:#111; --kw-subtle:#444; --kw-border:#d9d9d9; --kw-head:#f4f4f4; --kw-accent:#FF00E6;
+      background:var(--kw-bg)!important; color:var(--kw-fg)!important; border:1px solid var(--kw-border)!important;
+      border-radius:14px!important; box-shadow:0 6px 24px rgba(0,0,0,.18),0 2px 8px rgba(0,0,0,.12)!important;
+      padding:1rem!important; display:block!important; max-width:100%!important; position:relative; isolation:isolate; z-index:1; mix-blend-mode:normal!important;
+    }
+    .kw-size-guide *{color:inherit!important}
+    .kw-size-guide .note{color:var(--kw-subtle)!important}
+    .kw-size-guide .accent{color:var(--kw-accent)!important;font-weight:700}
+    .kw-size-guide .wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+    .kw-sg-collapsible{background:transparent!important;border:0;padding:0;margin:0 0 .5rem 0}
+    .kw-sg-collapsible>summary{
+      list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:.75rem;
+      font-weight:800;padding:.6rem .75rem;background:#fff!important;border:1px solid var(--kw-border)!important;border-radius:10px!important;box-shadow:0 2px 6px rgba(0,0,0,.06);color:var(--kw-fg)!important
+    }
+    .kw-sg-collapsible>summary::-webkit-details-marker{display:none}
+    .kw-sg-caret{flex:0 0 auto;transform:rotate(0);transition:transform .18s ease}
+    .kw-sg-collapsible[open] .kw-sg-caret{transform:rotate(180deg)}
+
+    .kw-size-guide .unit-toggle{display:inline-flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+    .kw-size-guide .toggle-btn{
+      border:1px solid var(--kw-border)!important;background:#fff!important;color:var(--kw-fg)!important;
+      padding:.4rem .7rem!important;border-radius:999px!important;cursor:pointer;font-size:.95rem;line-height:1;touch-action:manipulation
+    }
+    .kw-size-guide .toggle-btn[aria-pressed="true"]{border-color:var(--kw-accent)!important;box-shadow:0 0 0 3px rgba(255,0,230,.16)!important}
+
+    .kw-size-guide table{width:100%;border-collapse:collapse;margin:.5rem 0 1rem;font-size:.95rem;background:#fff!important;color:var(--kw-fg)!important}
+    .kw-size-guide caption{text-align:left;font-weight:800;margin-bottom:.35rem}
+    .kw-size-guide th,.kw-size-guide td{border:1px solid var(--kw-border)!important;padding:.55rem .6rem!important;text-align:left;white-space:nowrap}
+    .kw-size-guide thead th{background:var(--kw-head)!important}
+
+    @media(max-width:640px){.kw-size-guide{padding:.85rem!important}.kw-size-guide table{font-size:.92rem!important}}
+  </style>
+
+  <div class="kw-size-guide" role="region" aria-label="Kismet Wonders Size Guide" data-unit="in">
+    <details class="kw-sg-collapsible" open>
+      <summary aria-controls="kw-sg-content">
+        <span>Size Guide</span>
+        <svg class="kw-sg-caret" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 15.5l-6-6h12l-6 6z" fill="currentColor"/></svg>
+      </summary>
+
+      <div id="kw-sg-content" style="margin-top:.75rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+          <p class="note" style="margin:0;">Default shows inches. Toggle to centimeters (1 in = 2.54 cm).</p>
+          <div class="unit-toggle" aria-live="polite">
+            <span class="note">Units:</span>
+            <button type="button" class="toggle-btn" data-unit-target="in" aria-pressed="true" aria-label="Show inches">Inches</button>
+            <button type="button" class="toggle-btn" data-unit-target="cm" aria-pressed="false" aria-label="Show centimeters">Centimeters</button>
+          </div>
+        </div>
+
+        <details style="margin:.75rem 0;">
+          <summary style="cursor:pointer;font-weight:700;">How to Measure</summary>
+          <ul style="margin:.5rem 0 0 1rem;">
+            <li><span class="accent">Chest/Bust:</span> Measure around the fullest part, keeping the tape under the arms.</li>
+            <li><span class="accent">Waist:</span> Measure around the natural waist (the narrowest part).</li>
+            <li><span class="accent">Hips:</span> Measure around the fullest part of the hips/seat.</li>
+            <li><span class="accent">Inseam:</span> Measure from the top of the inner thigh to the ankle bone.</li>
+          </ul>
+        </details>
+
+        <div class="wrap">
+          <table aria-label="Men's size chart">
+            <caption>Men’s Sizing</caption>
+            <thead><tr><th>Size</th><th>Chest</th><th>Waist</th><th>Hips</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">S</th><td class="u-in">34–36</td><td class="u-in">28–30</td><td class="u-in">34–36</td></tr>
+              <tr><th scope="row">M</th><td class="u-in">38–40</td><td class="u-in">32–34</td><td class="u-in">38–40</td></tr>
+              <tr><th scope="row">L</th><td class="u-in">42–44</td><td class="u-in">36–38</td><td class="u-in">41–43</td></tr>
+              <tr><th scope="row">XL</th><td class="u-in">46–48</td><td class="u-in">40–42</td><td class="u-in">44–46</td></tr>
+              <tr><th scope="row">2XL</th><td class="u-in">50–52</td><td class="u-in">44–46</td><td class="u-in">48–50</td></tr>
+              <tr><th scope="row">3XL</th><td class="u-in">54–56</td><td class="u-in">48–50</td><td class="u-in">52–54</td></tr>
+              <tr><th scope="row">4XL</th><td class="u-in">58–60</td><td class="u-in">52–54</td><td class="u-in">56–58</td></tr>
+              <tr><th scope="row">5XL</th><td class="u-in">62–64</td><td class="u-in">56–58</td><td class="u-in">60–62</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="wrap">
+          <table aria-label="Women's size chart">
+            <caption>Women’s Sizing</caption>
+            <thead><tr><th>Size</th><th>Bust</th><th>Waist</th><th>Hips</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">S</th><td class="u-in">32–34</td><td class="u-in">24–26</td><td class="u-in">34–36</td></tr>
+              <tr><th scope="row">M</th><td class="u-in">36–38</td><td class="u-in">28–30</td><td class="u-in">36–38</td></tr>
+              <tr><th scope="row">L</th><td class="u-in">40–42</td><td class="u-in">32–34</td><td class="u-in">40–42</td></tr>
+              <tr><th scope="row">XL</th><td class="u-in">44–46</td><td class="u-in">36–38</td><td class="u-in">44–46</td></tr>
+              <tr><th scope="row">2XL</th><td class="u-in">48–50</td><td class="u-in">40–42</td><td class="u-in">48–50</td></tr>
+              <tr><th scope="row">3XL</th><td class="u-in">52–54</td><td class="u-in">44–46</td><td class="u-in">52–54</td></tr>
+              <tr><th scope="row">4XL</th><td class="u-in">56–58</td><td class="u-in">48–50</td><td class="u-in">56–58</td></tr>
+              <tr><th scope="row">5XL</th><td class="u-in">60–62</td><td class="u-in">52–54</td><td class="u-in">60–62</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="wrap">
+          <table aria-label="Children's size chart">
+            <caption>Children’s Sizing</caption>
+            <thead><tr><th>Size</th><th>Approx. Age</th><th>Height</th><th>Weight (lbs)</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">S</th><td>4–5</td><td class="u-in">40–44</td><td>35–45</td></tr>
+              <tr><th scope="row">M</th><td>6–7</td><td class="u-in">45–49</td><td>45–60</td></tr>
+              <tr><th scope="row">L</th><td>8–9</td><td class="u-in">50–54</td><td>60–75</td></tr>
+              <tr><th scope="row">XL</th><td>10–12</td><td class="u-in">55–60</td><td>75–100</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="note"><strong>Important:</strong> Measurements are general guidelines and may vary by brand, fabric, or style. For the most accurate fit, check the product’s specific size notes if provided.</p>
+      </div>
+    </details>
+  </div>
+
+  <script>
+  (function(){
+    var root = document.currentScript.previousElementSibling;
+    if (!root || !root.classList.contains('kw-size-guide')) return;
+    var IN_TO_CM=2.54, inBtn=root.querySelector('.toggle-btn[data-unit-target="in"]'), cmBtn=root.querySelector('.toggle-btn[data-unit-target="cm"]');
+    var cells=[].slice.call(root.querySelectorAll('td.u-in'));
+    cells.forEach(function(td){ td.setAttribute('data-in', td.textContent.trim()); });
+    function toCmText(inText){
+      var parts=inText.split(/,\s*/).map(function(chunk){
+        var r=chunk.replace(/\s/g,''), m=r.match(/^(\d+(?:\.\d+)?)[–-](\d+(?:\.\d+)?)$/);
+        if(m){return (parseFloat(m[1])*IN_TO_CM).toFixed(1)+'–'+(parseFloat(m[2])*IN_TO_CM).toFixed(1);}
+        var s=r.match(/^(\d+(?:\.\d+)?)$/); if(s){return (parseFloat(s[1])*IN_TO_CM).toFixed(1);} return chunk;
+      }); return parts.join(', ');
+    }
+    function setUnit(u){
+      root.setAttribute('data-unit',u);
+      if(inBtn) inBtn.setAttribute('aria-pressed', u==='in'?'true':'false');
+      if(cmBtn) cmBtn.setAttribute('aria-pressed', u==='cm'?'true':'false');
+      cells.forEach(function(td){ if(u==='in'){ td.textContent=td.getAttribute('data-in'); } else { td.textContent=toCmText(td.getAttribute('data-in')||td.textContent.trim()); } });
+    }
+    inBtn && inBtn.addEventListener('click', function(){ setUnit('in'); });
+    cmBtn && cmBtn.addEventListener('click', function(){ setUnit('cm'); });
+  })();
+  </script>
+{%- endif -%}
