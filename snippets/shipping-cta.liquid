@@ -1,0 +1,44 @@
+{% comment %}
+  Shipping CTA/Policy Information for Product Pages
+  Helps with Google compliance by clearly showing shipping information
+{% endcomment %}
+
+<div class="product-shipping-info" style="margin: 16px 0; padding: 16px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #f9f9f9;">
+  <!-- Detailed Shipping Information -->
+  <div class="ships-to" style="margin-bottom: 12px;">
+    <p style="margin: 0; font-size: 14px; line-height: 1.4;"><strong>Ships to your country:</strong> We currently ship worldwide, including the U.S., Canada, U.K., Europe, Asia, Australia, New Zealand, and more. See our <a href="/policies/shipping-policy" target="_blank" rel="noopener" style="color: #007bff; text-decoration: underline;">Shipping Policy</a> for the full list of countries.</p>
+  </div>
+  
+  <!-- Shipping CTAs -->
+  <div class="shipping-ctas" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+    <!-- Text Badge -->
+    <p style="font-weight: bold; color: #000; margin: 0; font-size: 14px;">
+      🌍 We Ship Worldwide!
+    </p>
+    
+    <!-- Button/CTA Style -->
+    <div style="background: #000; color: #fff; padding: 8px 12px; border-radius: 8px; display: inline-block; font-weight: bold; font-size: 12px;">
+      🌍 Ships Worldwide
+    </div>
+  </div>
+</div>
+
+<!-- Mobile responsive styles -->
+<style>
+@media (max-width: 768px) {
+  .product-shipping-info {
+    margin: 12px 0 !important;
+    padding: 12px !important;
+  }
+  
+  .shipping-ctas {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+  
+  .ships-to p {
+    font-size: 13px !important;
+  }
+}
+</style>

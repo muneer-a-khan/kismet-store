@@ -486,6 +486,12 @@
                   section_id: section.id,
                   show_pickup_availability: true
                 -%}
+                
+                {%- comment -%}
+                  SHIPPING CTA: Display shipping information for Google compliance
+                  Shows right after buy buttons for maximum visibility
+                {%- endcomment -%}
+                {% render 'shipping-cta' %}
               {%- when 'rating' -%}
                 {%- if product.metafields.reviews.rating.value != blank -%}
                   <div class="rating-wrapper">

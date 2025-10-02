@@ -145,15 +145,17 @@
   }
   
   .journal-cta-icon {
-    font-size: 2.5rem;
+    font-size: 3rem;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     background: rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+    border: 3px solid rgba(255, 255, 255, 0.3);
   }
   
   .journal-cta-button--secondary .journal-cta-icon {
@@ -206,6 +208,22 @@
     transform: rotate(45deg) scale(1.2);
   }
   
+  /* Pulse animation for emoji icons */
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+    }
+    70% {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+  }
+  
   /* Mobile responsive */
   @media (max-width: 768px) {
     .journal-cta-section {
@@ -219,6 +237,12 @@
     
     .journal-cta-button {
       padding: 1.5rem 1rem;
+    }
+    
+    .journal-cta-icon {
+      font-size: 2.5rem;
+      width: 60px;
+      height: 60px;
     }
     
     .journal-cta-title {
